@@ -112,13 +112,10 @@ def read_manifest() -> list[CompiledModel]:
 # Step 3: Dry-run each model against BigQuery
 # ──────────────────────────────────────────────
 
-SKIP_MATERIALIZATIONS = {"view", "ephemeral"}
-
-
 def estimate_model_cost(client, model: CompiledModel) -> CostEstimate:
     from google.cloud import bigquery
 
-    if model.materialization in SKIP_MATERIALIZATIONS:
+    if model.materialization in  {"view", "ephemeral"} or (model.materialization == "materialized_view" and model.full_refresh is False):
         return CostEstimate(
             model_name=model.name,
             materialization=model.materialization,
@@ -126,16 +123,6 @@ def estimate_model_cost(client, model: CompiledModel) -> CostEstimate:
             accuracy="N/A",
             skipped=True,
             skip_reason=f"{model.materialization}",
-        )
-
-    if model.materialization == "materialized_view" and model.full_refresh is False:
-        return CostEstimate(
-            model_name=model.name,
-            materialization=model.materialization,
-            bytes_processed=0,
-            accuracy="N/A",
-            skipped=True,
-            skip_reason="no full_refresh",
         )
 
     try:
