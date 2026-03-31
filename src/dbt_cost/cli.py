@@ -52,6 +52,7 @@ class CompiledModel:
     name: str
     materialization: str
     compiled_code: str
+    full_refresh: bool | None = None
 
 
 # ──────────────────────────────────────────────
@@ -92,13 +93,16 @@ def read_manifest() -> list[CompiledModel]:
         if not compiled_code:
             continue
 
-        materialization = node.get("config", {}).get("materialized", "unknown")
+        config = node.get("config", {})
+        materialization = config.get("materialized", "unknown")
+        full_refresh = config.get("full_refresh", None)
 
         models.append(CompiledModel(
             unique_id=unique_id,
             name=node["name"],
             materialization=materialization,
             compiled_code=compiled_code,
+            full_refresh=full_refresh,
         ))
 
     return models
@@ -122,6 +126,16 @@ def estimate_model_cost(client, model: CompiledModel) -> CostEstimate:
             accuracy="N/A",
             skipped=True,
             skip_reason=f"{model.materialization}",
+        )
+
+    if model.materialization == "materialized_view" and model.full_refresh is False:
+        return CostEstimate(
+            model_name=model.name,
+            materialization=model.materialization,
+            bytes_processed=0,
+            accuracy="N/A",
+            skipped=True,
+            skip_reason="no full_refresh",
         )
 
     try:

@@ -34,7 +34,7 @@ Models materialized as `view` or `ephemeral` are skipped since they don't scan d
 Requires [uv](https://docs.astral.sh/uv/) and valid BigQuery credentials (`gcloud auth application-default login` or `GOOGLE_APPLICATION_CREDENTIALS`).
 
 ```bash
-uv tool install git+https://github.com/your-org/dbt-cost.git
+uv tool install git+https://github.com/merlixo/dbt-cost.git
 ```
 
 This installs `dbt-cost` as a global CLI command. To update later:
@@ -50,7 +50,7 @@ uv tool upgrade dbt-cost
 ```toml
 [dependency-groups]
 dev = [
-    "dbt-cost @ git+https://github.com/your-org/dbt-cost.git",
+    "dbt-cost @ git+https://github.com/merlixo/dbt-cost.git",
 ]
 ```
 
@@ -62,7 +62,7 @@ uv run dbt-cost -s +fct_revenue
 **Run without installing:**
 
 ```bash
-uvx --from git+https://github.com/your-org/dbt-cost.git dbt-cost -s +fct_revenue
+uvx --from git+https://github.com/merlixo/dbt-cost.git dbt-cost -s +fct_revenue
 ```
 
 ## Usage
